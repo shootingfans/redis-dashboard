@@ -45,6 +45,7 @@ func saveRun(fn func()) {
 	fn()
 }
 
+// NewGroup create routine group
 func NewGroup() Group {
 	return new(group)
 }
