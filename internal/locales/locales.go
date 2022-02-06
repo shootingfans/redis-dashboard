@@ -12,9 +12,12 @@ const (
 	ERROR_INCORRECT_PLUGIN         Tag = "incorrect plugin: %s"
 	ERROR_INITIALIZE_PLUGIN_FAILED Tag = "initialize plugin failed: %s"
 	ERROR_INCORRECT_PLUGIN_FOLDER  Tag = "incorrect plugin folder: %s"
+	ERROR_START_APPLICATION_FAILED Tag = "start application failed: %s"
 
 	LOG_INFO_PLUGIN_DISCOVERY       Tag = "plugin %s discovery"
 	LOG_INFO_PLUGIN_LANGUAGE_LOADED Tag = "language %s loaded"
+	LOG_INFO_APPLICATION_STARTED    Tag = "application started"
+	LOG_INFO_APPLICATION_STOPED     Tag = "application stopped"
 
 	FLAG_PLUGIN_FOLDER_DESCRIPTION Tag = "Set the plugin folder"
 )

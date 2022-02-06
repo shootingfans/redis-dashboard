@@ -20,6 +20,9 @@ func (t traditionalChinesePlugin) GetTagList() map[locales.Tag]string {
 		locales.LOG_INFO_PLUGIN_DISCOVERY:       "發現插件 %s",
 		locales.ERROR_INCORRECT_PLUGIN_FOLDER:   "無效的插件目錄: %s",
 		locales.LOG_INFO_PLUGIN_LANGUAGE_LOADED: "語言包 %s 載入",
+		locales.ERROR_START_APPLICATION_FAILED:  "啓動應用失敗: %s",
+		locales.LOG_INFO_APPLICATION_STARTED:    "應用已啓動",
+		locales.LOG_INFO_APPLICATION_STOPED:     "應用已停止",
 	}
 }
 
