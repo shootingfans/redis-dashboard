@@ -19,7 +19,7 @@ jobs:
           go-version: ${{ matrix.go_version }}
 
       - name: Install x11 dependencies
-        run: apt-get install gcc libgl1-mesa-dev xorg-dev
+        run: sudo apt-get install gcc libgl1-mesa-dev xorg-dev
 
       - name: Install go dependencies
         run: go get -t -v ./...
