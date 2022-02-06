@@ -3,6 +3,7 @@ package plugins
 import (
 	"fmt"
 	"github.com/shootingfans/redis-dashboard/internal/locales"
+	"github.com/shootingfans/redis-dashboard/internal/logger"
 	"path/filepath"
 	"plugin"
 	"strings"
@@ -23,7 +24,7 @@ func Initialize(folder string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println(locales.Get(locales.LOG_INFO_PLUGIN_DISCOVERY, getPluginName(plug, item)))
+		logger.Info(locales.Get(locales.LOG_INFO_PLUGIN_DISCOVERY, getPluginName(plug, item)))
 		switch tp := ins.(type) {
 		case locales.Plugin:
 			localesPlugin = append(localesPlugin, tp)

@@ -1,7 +1,7 @@
 package locales
 
 import (
-	"fmt"
+	"github.com/shootingfans/redis-dashboard/internal/logger"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -20,7 +20,7 @@ func InjectionPlugin(plugs ...Plugin) error {
 				return err
 			}
 		}
-		fmt.Println(Get(LOG_INFO_PLUGIN_LANGUAGE_LOADED, plug.Name()))
+		logger.Info(Get(LOG_INFO_PLUGIN_LANGUAGE_LOADED, plug.Name()))
 		supportLanguages = append(supportLanguages, [2]string{plug.Name(), lang.String()})
 	}
 	return nil
