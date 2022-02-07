@@ -16,13 +16,19 @@ func (t traditionalChinesePlugin) GetTagList() map[locales.Tag]string {
 		locales.ERROR_OPEN_PLUGIN_FAILED:        "載入插件失敗: %s",
 		locales.ERROR_INCORRECT_PLUGIN:          "無效的插件: %s",
 		locales.ERROR_INITIALIZE_PLUGIN_FAILED:  "初始化插件失敗: %s",
-		locales.FLAG_PLUGIN_FOLDER_DESCRIPTION:  "配置插件目錄",
-		locales.LOG_INFO_PLUGIN_DISCOVERY:       "發現插件 %s",
 		locales.ERROR_INCORRECT_PLUGIN_FOLDER:   "無效的插件目錄: %s",
-		locales.LOG_INFO_PLUGIN_LANGUAGE_LOADED: "語言包 %s 載入",
 		locales.ERROR_START_APPLICATION_FAILED:  "啓動應用失敗: %s",
+		locales.LOG_INFO_PLUGIN_DISCOVERY:       "發現插件 %s",
+		locales.LOG_INFO_PLUGIN_LANGUAGE_LOADED: "語言包 %s 載入",
 		locales.LOG_INFO_APPLICATION_STARTED:    "應用已啓動",
 		locales.LOG_INFO_APPLICATION_STOPED:     "應用已停止",
+		locales.FLAG_PLUGIN_FOLDER_DESCRIPTION:  "配置插件目錄",
+		locales.LABEL_SELECT_LANGUAGE:           "語言",
+		locales.TITLE_SETTING_WINDOWS:           "配置",
+		locales.BUTTON_CONFIRM:                  "確認",
+		locales.BUTTON_SAVE:                     "保存",
+		locales.BUTTON_CANCEL:                   "取消",
+		locales.BUTTON_EDIT_SETTING:             "修改配置",
 	}
 }
 
