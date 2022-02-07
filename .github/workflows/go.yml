@@ -22,7 +22,7 @@ jobs:
         run: sudo apt-get install gcc libgl1-mesa-dev xorg-dev
 
       - name: Install go dependencies
-        run: go get -t -v ./...
+        run: go mod tidy -v
 
       - name: Run go tests on ${{ matrix.go_version }}
         run: go test -v -cover -coverprofile=coverage.txt -covermode=atomic ./...
