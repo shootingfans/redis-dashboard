@@ -2,16 +2,16 @@ name: Test
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: [ '*' ]
   pull_request:
-    branches: [ 'main' ]
+    branches: [ '*' ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go_version: [ '1.16', '1.17' ]
+        go_version: [ '1.16' ]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v1
