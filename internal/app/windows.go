@@ -4,9 +4,10 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+
 	"github.com/shootingfans/redis-dashboard/internal/locales"
-	"golang.org/x/text/language"
 )
 
 func makeMainWindows() fyne.Window {
@@ -14,9 +15,8 @@ func makeMainWindows() fyne.Window {
 	w := app.NewWindow("redis-dashboard")
 	w.SetContent(
 		container.NewVBox(
-			widget.NewButton(locales.Get(locales.BUTTON_EDIT_SETTING), func() {
-				makeSettingDialog(w).Show()
-			}),
+			makeToolBar(w),
+			widget.NewSeparator(),
 		),
 	)
 	w.Resize(fyne.NewSize(
@@ -30,28 +30,28 @@ func makeMainWindows() fyne.Window {
 	return w
 }
 
-func makeToolBar() {
-	widget.NewToolbar()
+func makeToolBar(parent fyne.Window) *widget.Toolbar {
+	return widget.NewToolbar(
+		widget.NewToolbarAction(theme.SettingsIcon(), func() {
+			makeSettingDialog(parent).Show()
+		}),
+	)
 }
 
 func makeSettingDialog(parent fyne.Window) dialog.Dialog {
 	var items []*widget.FormItem
-	items = append(items, makeLanguageSelector())
+	items = append(items, makeLanguageSelector(), makeLightOrDarkRadioGroup())
 	submit := func(confirm bool) {
 		if !confirm {
 			return
 		}
+		var windowsReboot bool
+		windowsReboot = editTheme(items[1].Widget.(*widget.RadioGroup).Selected) || windowsReboot
 		// language changed
-		lan := items[0].Widget.(*widget.Select).Selected
-		for _, lang := range locales.AllLanguages() {
-			if lang[0] == lan {
-				if locales.CurrentLanguage().String() != lang[1] {
-					locales.SetLanguage(lang[1])
-					fyne.CurrentApp().Preferences().SetString(preferenceKeyOfSettingLanguage, lang[1])
-					rebootMainWindows()
-				}
-				break
-			}
+		// note: language will change other options string ,so this must handle at last
+		windowsReboot = editLanguage(items[0].Widget.(*widget.Select).Selected) || windowsReboot
+		if windowsReboot {
+			rebootMainWindows()
 		}
 	}
 	dia := dialog.NewForm(
@@ -65,17 +65,15 @@ func makeSettingDialog(parent fyne.Window) dialog.Dialog {
 }
 
 func makeLanguageSelector() *widget.FormItem {
-	languages := locales.AllLanguages()
-	var options []string
-	var selected string
-	nowLanguage := fyne.CurrentApp().Preferences().StringWithFallback(preferenceKeyOfSettingLanguage, language.English.String())
-	for _, lang := range languages {
-		options = append(options, lang[0])
-		if lang[1] == nowLanguage {
-			selected = lang[0]
-		}
-	}
-	s := widget.NewSelect(options, nil)
-	s.SetSelected(selected)
+	s := widget.NewSelect(locales.GetLanguageNameList(), nil)
+	s.SetSelected(locales.CurrentLanguageName())
 	return widget.NewFormItem(locales.Get(locales.LABEL_SELECT_LANGUAGE), s)
+}
+
+func makeLightOrDarkRadioGroup() *widget.FormItem {
+	s := widget.NewRadioGroup([]string{locales.Get(locales.LABEL_THEME_LIGHT), locales.Get(locales.LABEL_THEME_DARK)}, nil)
+	s.Required = true
+	s.Horizontal = true
+	s.SetSelected(locales.Get(currentTheme().Tag()))
+	return widget.NewFormItem(locales.Get(locales.LABEL_SELECT_THEME), s)
 }

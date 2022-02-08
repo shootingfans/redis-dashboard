@@ -14,6 +14,7 @@ const (
 	preferenceKeyOfSettingLanguage     = "Setting.Language"
 	preferenceKeyOfMainAppWindowWidth  = "Size.main.width"
 	preferenceKeyOfMainAppWindowHeight = "Size.main.height"
+	preferenceKeyOfTheme               = "Setting.Theme"
 )
 
 const (
@@ -38,14 +39,14 @@ type guiApp struct {
 
 func (g *guiApp) initialize() error {
 	p := app.NewWithID(appUniqueId)
-	locales.SetLanguage(p.Preferences().StringWithFallback(preferenceKeyOfSettingLanguage, locales.CurrentLanguage().String()))
+	locales.SetLanguage(currentLanguage())
 	p.Lifecycle().SetOnStarted(func() {
 		logger.Info(locales.Get(locales.LOG_INFO_APPLICATION_STARTED))
 	})
 	p.Lifecycle().SetOnStopped(func() {
 		logger.Info(locales.Get(locales.LOG_INFO_APPLICATION_STOPED))
 	})
-	p.Settings().SetTheme(newTheme(p.Settings().Theme()))
+	setAppTheme()
 	g.renderMain()
 	return nil
 }
@@ -81,5 +82,10 @@ func rebootMainWindows() {
 	main := makeMainWindows()
 	main.CenterOnScreen()
 	main.Show()
+	logger.Info(locales.Get(locales.LOG_INFO_RENEW_RENDER_WINDOWS))
 	fyne.CurrentApp().Driver().AllWindows()[0].Close()
+}
+
+func currentLanguage() string {
+	return fyne.CurrentApp().Preferences().StringWithFallback(preferenceKeyOfSettingLanguage, locales.CurrentLanguage().String())
 }
