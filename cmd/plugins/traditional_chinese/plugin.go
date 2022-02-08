@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/shootingfans/redis-dashboard/internal/locales"
 	"golang.org/x/text/language"
+
+	"github.com/shootingfans/redis-dashboard/internal/locales"
 )
 
 type traditionalChinesePlugin struct{}
@@ -36,8 +37,10 @@ func (t traditionalChinesePlugin) Name() string {
 	return "繁體中文"
 }
 
+// Name is export the plugin name
 var Name = "繁體中文語言包"
 
+// Instance is return a plugin instance
 func Instance() interface{} {
 	return new(traditionalChinesePlugin)
 }

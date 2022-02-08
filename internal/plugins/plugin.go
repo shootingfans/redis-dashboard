@@ -2,13 +2,15 @@ package plugins
 
 import (
 	"fmt"
-	"github.com/shootingfans/redis-dashboard/internal/locales"
-	"github.com/shootingfans/redis-dashboard/internal/logger"
 	"path/filepath"
 	"plugin"
 	"strings"
+
+	"github.com/shootingfans/redis-dashboard/internal/locales"
+	"github.com/shootingfans/redis-dashboard/internal/logger"
 )
 
+// Initialize is init the plugin in folder (name like *.so)
 func Initialize(folder string) error {
 	list, err := filepath.Glob(strings.TrimSuffix(folder, "/") + "/*.so")
 	if err != nil {

@@ -3,6 +3,7 @@ package app
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+
 	"github.com/shootingfans/redis-dashboard/internal/locales"
 	"github.com/shootingfans/redis-dashboard/internal/logger"
 )
@@ -22,8 +23,12 @@ const (
 	defaultSettingDialogHeight  = 100
 )
 
+// App define application interface
 type App interface {
+	// Start is start the application
 	Start() error
+
+	// Stop is stop the application
 	Stop()
 }
 
@@ -67,6 +72,7 @@ func (g *guiApp) Stop() {
 	fyne.CurrentApp().Quit()
 }
 
+// NewGUI return new gui application
 func NewGUI() App {
 	return new(guiApp)
 }

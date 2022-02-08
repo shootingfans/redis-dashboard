@@ -1,17 +1,23 @@
 package locales
 
 import (
-	"github.com/shootingfans/redis-dashboard/internal/logger"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
+
+	"github.com/shootingfans/redis-dashboard/internal/logger"
 )
 
+// Plugin is language Plugin
 type Plugin interface {
+	// Language return the plugin language tag
 	Language() language.Tag
+	// GetTagList return all tag and it's translate message
 	GetTagList() map[Tag]string
+	// Name return plugin name
 	Name() string
 }
 
+// InjectionPlugin is load language plugin
 func InjectionPlugin(plugs ...Plugin) error {
 	for _, plug := range plugs {
 		lang := plug.Language()

@@ -41,27 +41,34 @@ var currentLanguage language.Tag
 var currentPrinter *message.Printer
 var supportLanguages [][2]string
 
-func SetLanguage(lang string) {
+// SetLanguage is change current language to lang
+func SetLanguage(lang string) error {
 	l, err := language.Parse(lang)
 	if err != nil {
-		return
+		return err
 	}
 	currentLanguage = l
 	currentPrinter = message.NewPrinter(currentLanguage)
+	return nil
 }
 
+// AllLanguages return all support language
+// The [2]string array is like [2]string{pluginName, language.Tag.String()}
 func AllLanguages() [][2]string {
 	return supportLanguages
 }
 
+// Printer return current Printer
 func Printer() *message.Printer {
 	return currentPrinter
 }
 
+// CurrentLanguage return current language
 func CurrentLanguage() language.Tag {
 	return currentLanguage
 }
 
+// Get is get translate message of tag and args
 func Get(tag Tag, v ...interface{}) string {
 	return currentPrinter.Sprintf(string(tag), v...)
 }
