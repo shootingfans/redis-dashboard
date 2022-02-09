@@ -26,3 +26,11 @@ func editTheme(selected string) bool {
 	}
 	return false
 }
+
+func editRecordWindowSize(checked bool) bool {
+	if checked != currentRecordWindowSize() {
+		fyne.CurrentApp().Preferences().SetBool(preferenceKeyOfRecordWindowSize, checked)
+		return true
+	}
+	return false
+}

@@ -28,6 +28,7 @@ const (
 	LABEL_SELECT_THEME    Tag = "Theme"
 	LABEL_THEME_DARK      Tag = "Dark"
 	LABEL_THEME_LIGHT     Tag = "Light"
+	LABEL_RECORD_SIZE     Tag = "Record Window Size"
 
 	TITLE_SETTING_WINDOWS Tag = "Setting"
 

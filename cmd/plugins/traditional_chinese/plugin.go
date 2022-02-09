@@ -31,6 +31,7 @@ func (t traditionalChinesePlugin) GetTagList() map[locales.Tag]string {
 		locales.LABEL_SELECT_THEME:              "主題",
 		locales.LABEL_THEME_LIGHT:               "淺色",
 		locales.LABEL_THEME_DARK:                "深色",
+		locales.LABEL_RECORD_SIZE:               "紀錄窗口大小",
 		locales.TITLE_SETTING_WINDOWS:           "配置",
 		locales.BUTTON_CONFIRM:                  "確認",
 		locales.BUTTON_SAVE:                     "保存",

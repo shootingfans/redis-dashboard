@@ -1,6 +1,10 @@
 package app
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 
@@ -13,10 +17,12 @@ const appUniqueId = "com.shootingfans.redis-dashboard"
 const appVersion = "v0.1.0"
 
 const (
-	preferenceKeyOfSettingLanguage     = "Setting.Language"
-	preferenceKeyOfMainAppWindowWidth  = "Size.main.width"
-	preferenceKeyOfMainAppWindowHeight = "Size.main.height"
-	preferenceKeyOfTheme               = "Setting.Theme"
+	preferenceKeyOfSettingLanguage     = "Setting_Language"
+	preferenceKeyOfTheme               = "Setting_Theme"
+	preferenceKeyOfRecordWindowSize    = "Setting_RecordWindowSize"
+	preferenceKeyOfAppSize             = "Application_Size"
+	preferenceKeyOfMainAppWindowWidth  = "Application_Size_Width"
+	preferenceKeyOfMainAppWindowHeight = "Application_Size_Height"
 )
 
 const (
@@ -27,9 +33,10 @@ const (
 )
 
 const (
-	eventNameOfRebootWindows  = "event.reboot.windows"
+	eventNameOfRebootWindow   = "event.reboot.window"
 	eventNameOfThemeChanged   = "event.theme.changed"
 	eventNameOfToggleLeftMenu = "event.toggle.left.menu"
+	eventNameOfCloseWindow    = "event.close.window"
 )
 
 var currentApp App
@@ -68,13 +75,27 @@ func (g *guiApp) initialize() error {
 		setAppTheme()
 	})
 	g.renderMain()
+	size := []int{defaultMainAppWindowsWidth, defaultMainAppWindowsHeight}
+	if currentRecordWindowSize() {
+		for k, v := range strings.Split(p.Preferences().String(preferenceKeyOfAppSize), ",") {
+			if tmp, err := strconv.Atoi(v); err == nil {
+				size[k] = tmp
+			}
+		}
+	}
+	p.Driver().AllWindows()[0].Resize(fyne.NewSize(float32(size[0]), float32(size[1])))
+	g.eventMgr.FocusOn(eventNameOfCloseWindow, func(_ string, data interface{}) {
+		if size, ok := data.(fyne.Size); ok {
+			p.Preferences().SetString(preferenceKeyOfAppSize, fmt.Sprintf("%d,%d", int(size.Width), int(size.Height)))
+		}
+	})
 	return nil
 }
 
 func (g *guiApp) renderMain() {
 	main := makeMainWindows()
 	main.Show()
-	g.eventMgr.FocusOn(eventNameOfRebootWindows, func(_ string, _ interface{}) {
+	g.eventMgr.FocusOn(eventNameOfRebootWindow, func(_ string, _ interface{}) {
 		rebootMainWindows()
 	})
 }
@@ -98,12 +119,9 @@ func NewGUI() App {
 }
 
 func rebootMainWindows() {
-	a := fyne.CurrentApp()
-	w := a.Driver().AllWindows()[0]
-	a.Preferences().SetFloat(preferenceKeyOfMainAppWindowWidth, float64(w.Canvas().Size().Width))
-	a.Preferences().SetFloat(preferenceKeyOfMainAppWindowHeight, float64(w.Canvas().Size().Height))
+	w := fyne.CurrentApp().Driver().AllWindows()[0]
 	main := makeMainWindows()
-	main.CenterOnScreen()
+	main.Resize(fyne.NewSize(w.Canvas().Size().Width, w.Canvas().Size().Height))
 	main.Show()
 	logger.Info(locales.Get(locales.LOG_INFO_RENEW_RENDER_WINDOWS))
 	w.Close()
@@ -111,4 +129,8 @@ func rebootMainWindows() {
 
 func currentLanguage() string {
 	return fyne.CurrentApp().Preferences().StringWithFallback(preferenceKeyOfSettingLanguage, locales.CurrentLanguage().String())
+}
+
+func currentRecordWindowSize() bool {
+	return fyne.CurrentApp().Preferences().BoolWithFallback(preferenceKeyOfRecordWindowSize, true)
 }

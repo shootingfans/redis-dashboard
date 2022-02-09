@@ -24,15 +24,10 @@ func makeMainWindows() fyne.Window {
 			makeButtonToolbar(),
 		),
 	)
-	w.Resize(fyne.NewSize(
-		float32(app.Preferences().FloatWithFallback(preferenceKeyOfMainAppWindowWidth, defaultMainAppWindowsWidth)),
-		float32(app.Preferences().FloatWithFallback(preferenceKeyOfMainAppWindowHeight, defaultMainAppWindowsHeight)),
-	))
-	w.CenterOnScreen()
 	w.SetOnClosed(func() {
-		app.Preferences().SetFloat(preferenceKeyOfMainAppWindowWidth, float64(w.Canvas().Size().Width))
-		app.Preferences().SetFloat(preferenceKeyOfMainAppWindowHeight, float64(w.Canvas().Size().Height))
+		currentApp.EventManager().Trigger(eventNameOfCloseWindow, w.Canvas().Size())()
 	})
+	w.CenterOnScreen()
 	return w
 }
 
@@ -52,18 +47,19 @@ func makeToolBar(parent fyne.Window) fyne.CanvasObject {
 
 func makeSettingDialog(parent fyne.Window) dialog.Dialog {
 	var items []*widget.FormItem
-	items = append(items, makeLanguageSelector(), makeLightOrDarkRadioGroup())
+	items = append(items, makeLanguageSelector(), makeLightOrDarkRadioGroup(), makeRecordWindowSize())
 	submit := func(confirm bool) {
 		if !confirm {
 			return
 		}
 		var windowsReboot bool
+		editRecordWindowSize(items[2].Widget.(*widget.Check).Checked)
 		windowsReboot = editTheme(items[1].Widget.(*widget.RadioGroup).Selected) || windowsReboot
 		// language changed
 		// note: language will change other options string ,so this must handle at last
 		windowsReboot = editLanguage(items[0].Widget.(*widget.Select).Selected) || windowsReboot
 		if windowsReboot {
-			currentApp.EventManager().Trigger(eventNameOfRebootWindows, nil)
+			currentApp.EventManager().Trigger(eventNameOfRebootWindow, nil)
 		}
 	}
 	dia := dialog.NewForm(
@@ -88,6 +84,12 @@ func makeLightOrDarkRadioGroup() *widget.FormItem {
 	s.Horizontal = true
 	s.SetSelected(locales.Get(currentTheme().Tag()))
 	return widget.NewFormItem(locales.Get(locales.LABEL_SELECT_THEME), s)
+}
+
+func makeRecordWindowSize() *widget.FormItem {
+	s := widget.NewCheck("", nil)
+	s.SetChecked(currentRecordWindowSize())
+	return widget.NewFormItem(locales.Get(locales.LABEL_RECORD_SIZE), s)
 }
 
 func makeWorkspace() fyne.CanvasObject {

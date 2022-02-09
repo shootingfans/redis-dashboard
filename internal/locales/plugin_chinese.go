@@ -31,6 +31,7 @@ func (c simplifiedChinesePlugin) GetTagList() map[Tag]string {
 		LABEL_SELECT_THEME:              "主题",
 		LABEL_THEME_LIGHT:               "浅色",
 		LABEL_THEME_DARK:                "深色",
+		LABEL_RECORD_SIZE:               "记录窗口大小",
 		TITLE_SETTING_WINDOWS:           "配置",
 		BUTTON_CONFIRM:                  "确认",
 		BUTTON_SAVE:                     "保存",

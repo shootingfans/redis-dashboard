@@ -31,6 +31,7 @@ func (e englishPlugin) GetTagList() map[Tag]string {
 		LABEL_SELECT_THEME:              string(LABEL_SELECT_THEME),
 		LABEL_THEME_LIGHT:               string(LABEL_THEME_LIGHT),
 		LABEL_THEME_DARK:                string(LABEL_THEME_DARK),
+		LABEL_RECORD_SIZE:               string(LABEL_RECORD_SIZE),
 		TITLE_SETTING_WINDOWS:           string(TITLE_SETTING_WINDOWS),
 		BUTTON_CONFIRM:                  string(BUTTON_CONFIRM),
 		BUTTON_SAVE:                     string(BUTTON_SAVE),
