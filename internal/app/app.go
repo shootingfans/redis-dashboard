@@ -6,6 +6,7 @@ import (
 
 	"github.com/shootingfans/redis-dashboard/internal/locales"
 	"github.com/shootingfans/redis-dashboard/internal/logger"
+	"github.com/shootingfans/redis-dashboard/pkg/event"
 )
 
 const appUniqueId = "com.shootingfans.redis-dashboard"
@@ -24,6 +25,13 @@ const (
 	defaultSettingDialogHeight  = 100
 )
 
+const (
+	eventNameOfRebootWindows = "event.reboot.windows"
+	eventNameOfThemeChanged  = "event.theme.changed"
+)
+
+var currentApp App
+
 // App define application interface
 type App interface {
 	// Start is start the application
@@ -31,13 +39,20 @@ type App interface {
 
 	// Stop is stop the application
 	Stop()
+
+	EventManager() event.Manager
 }
 
 type guiApp struct {
-	startDisable int32
+	eventMgr event.Manager
+}
+
+func (g *guiApp) EventManager() event.Manager {
+	return g.eventMgr
 }
 
 func (g *guiApp) initialize() error {
+	g.eventMgr = event.NewManager()
 	p := app.NewWithID(appUniqueId)
 	locales.SetLanguage(currentLanguage())
 	p.Lifecycle().SetOnStarted(func() {
@@ -47,25 +62,27 @@ func (g *guiApp) initialize() error {
 		logger.Info(locales.Get(locales.LOG_INFO_APPLICATION_STOPED))
 	})
 	setAppTheme()
+	g.eventMgr.FocusOn(eventNameOfThemeChanged, func(_ string, _ interface{}) {
+		setAppTheme()
+	})
 	g.renderMain()
 	return nil
 }
 
 func (g *guiApp) renderMain() {
 	main := makeMainWindows()
-	//main.SetMaster()
 	main.Show()
+	g.eventMgr.FocusOn(eventNameOfRebootWindows, func(_ string, _ interface{}) {
+		rebootMainWindows()
+	})
 }
 
 func (g *guiApp) Start() error {
-	//g.startDisable = 1
-	//for atomic.CompareAndSwapInt32(&g.startDisable, 1, 0) {
-	//	fmt.Println("start...", g.startDisable)
 	if err := g.initialize(); err != nil {
 		return err
 	}
+	currentApp = g
 	fyne.CurrentApp().Run()
-	//}
 	return nil
 }
 

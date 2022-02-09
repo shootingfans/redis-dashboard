@@ -21,7 +21,7 @@ func editTheme(selected string) bool {
 	if s := getThemeByTranslate(selected); s != currentTheme() {
 		logger.Info(locales.Get(locales.LOG_INFO_THEME_CHANGED, locales.Get(currentTheme().Tag()), selected))
 		fyne.CurrentApp().Preferences().SetString(preferenceKeyOfTheme, string(s))
-		setAppTheme()
+		currentApp.EventManager().Trigger(eventNameOfThemeChanged, nil)()
 		return true
 	}
 	return false

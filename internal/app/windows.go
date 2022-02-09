@@ -51,7 +51,7 @@ func makeSettingDialog(parent fyne.Window) dialog.Dialog {
 		// note: language will change other options string ,so this must handle at last
 		windowsReboot = editLanguage(items[0].Widget.(*widget.Select).Selected) || windowsReboot
 		if windowsReboot {
-			rebootMainWindows()
+			currentApp.EventManager().Trigger(eventNameOfRebootWindows, nil)
 		}
 	}
 	dia := dialog.NewForm(
