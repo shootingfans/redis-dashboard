@@ -10,6 +10,7 @@ import (
 )
 
 const appUniqueId = "com.shootingfans.redis-dashboard"
+const appVersion = "v0.1.0"
 
 const (
 	preferenceKeyOfSettingLanguage     = "Setting.Language"
@@ -26,8 +27,9 @@ const (
 )
 
 const (
-	eventNameOfRebootWindows = "event.reboot.windows"
-	eventNameOfThemeChanged  = "event.theme.changed"
+	eventNameOfRebootWindows  = "event.reboot.windows"
+	eventNameOfThemeChanged   = "event.theme.changed"
+	eventNameOfToggleLeftMenu = "event.toggle.left.menu"
 )
 
 var currentApp App
@@ -96,11 +98,15 @@ func NewGUI() App {
 }
 
 func rebootMainWindows() {
+	a := fyne.CurrentApp()
+	w := a.Driver().AllWindows()[0]
+	a.Preferences().SetFloat(preferenceKeyOfMainAppWindowWidth, float64(w.Canvas().Size().Width))
+	a.Preferences().SetFloat(preferenceKeyOfMainAppWindowHeight, float64(w.Canvas().Size().Height))
 	main := makeMainWindows()
 	main.CenterOnScreen()
 	main.Show()
 	logger.Info(locales.Get(locales.LOG_INFO_RENEW_RENDER_WINDOWS))
-	fyne.CurrentApp().Driver().AllWindows()[0].Close()
+	w.Close()
 }
 
 func currentLanguage() string {

@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
@@ -17,12 +18,17 @@ func makeMainWindows() fyne.Window {
 		container.NewVBox(
 			makeToolBar(w),
 			widget.NewSeparator(),
+			makeWorkspace(),
+			layout.NewSpacer(),
+			widget.NewSeparator(),
+			makeButtonToolbar(),
 		),
 	)
 	w.Resize(fyne.NewSize(
 		float32(app.Preferences().FloatWithFallback(preferenceKeyOfMainAppWindowWidth, defaultMainAppWindowsWidth)),
 		float32(app.Preferences().FloatWithFallback(preferenceKeyOfMainAppWindowHeight, defaultMainAppWindowsHeight)),
 	))
+	w.CenterOnScreen()
 	w.SetOnClosed(func() {
 		app.Preferences().SetFloat(preferenceKeyOfMainAppWindowWidth, float64(w.Canvas().Size().Width))
 		app.Preferences().SetFloat(preferenceKeyOfMainAppWindowHeight, float64(w.Canvas().Size().Height))
@@ -30,12 +36,18 @@ func makeMainWindows() fyne.Window {
 	return w
 }
 
-func makeToolBar(parent fyne.Window) *widget.Toolbar {
-	return widget.NewToolbar(
+func makeToolBar(parent fyne.Window) fyne.CanvasObject {
+	rightToolbar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.SettingsIcon(), func() {
 			makeSettingDialog(parent).Show()
 		}),
 	)
+	leftToolbar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.MenuIcon(), func() {
+			currentApp.EventManager().Trigger(eventNameOfToggleLeftMenu, nil)
+		}),
+	)
+	return container.NewHBox(leftToolbar, layout.NewSpacer(), rightToolbar)
 }
 
 func makeSettingDialog(parent fyne.Window) dialog.Dialog {
@@ -76,4 +88,15 @@ func makeLightOrDarkRadioGroup() *widget.FormItem {
 	s.Horizontal = true
 	s.SetSelected(locales.Get(currentTheme().Tag()))
 	return widget.NewFormItem(locales.Get(locales.LABEL_SELECT_THEME), s)
+}
+
+func makeWorkspace() fyne.CanvasObject {
+	return container.NewCenter(widget.NewLabel("workspace"))
+}
+
+func makeButtonToolbar() fyne.CanvasObject {
+	return container.NewHBox(
+		layout.NewSpacer(),
+		widget.NewLabel(appVersion),
+	)
 }
