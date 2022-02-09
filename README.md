@@ -7,3 +7,17 @@
 # redis-dashboard
 
 a desktop dashboard for management redis
+
+## todolist
+
+- [X] i18n
+- [X] plugin mechanism
+- [X] dark or light theme
+- [X] event mechanism
+- [ ] logger
+- [ ] auto update
+- [X] record windows size
+- [ ] left workspace toggle whether visible
+- [ ] redis host manage in left workspace
+- [ ] redis keys manage in right workspace
+- [ ] redis command interaction
