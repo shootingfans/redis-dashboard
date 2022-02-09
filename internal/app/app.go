@@ -7,22 +7,23 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	jsoniter "github.com/json-iterator/go"
 
 	"github.com/shootingfans/redis-dashboard/internal/locales"
 	"github.com/shootingfans/redis-dashboard/internal/logger"
 	"github.com/shootingfans/redis-dashboard/pkg/event"
+	"github.com/shootingfans/redis-dashboard/pkg/utils"
 )
 
 const appUniqueId = "com.shootingfans.redis-dashboard"
 const appVersion = "v0.1.0"
 
 const (
-	preferenceKeyOfSettingLanguage     = "Setting_Language"
-	preferenceKeyOfTheme               = "Setting_Theme"
-	preferenceKeyOfRecordWindowSize    = "Setting_RecordWindowSize"
-	preferenceKeyOfAppSize             = "Application_Size"
-	preferenceKeyOfMainAppWindowWidth  = "Application_Size_Width"
-	preferenceKeyOfMainAppWindowHeight = "Application_Size_Height"
+	preferenceKeyOfSettingLanguage  = "SettingLanguage"
+	preferenceKeyOfTheme            = "SettingTheme"
+	preferenceKeyOfRecordWindowSize = "SettingRecordWindowSize"
+	preferenceKeyOfAppSize          = "ApplicationWindowSize"
+	preferenceKeyOfRedisConfigList  = "RedisConfigList"
 )
 
 const (
@@ -33,10 +34,11 @@ const (
 )
 
 const (
-	eventNameOfRebootWindow   = "event.reboot.window"
-	eventNameOfThemeChanged   = "event.theme.changed"
-	eventNameOfToggleLeftMenu = "event.toggle.left.menu"
-	eventNameOfCloseWindow    = "event.close.window"
+	eventNameOfRebootWindow      = "event.reboot.window"
+	eventNameOfThemeChanged      = "event.theme.changed"
+	eventNameOfToggleLeftMenu    = "event.toggle.left.menu"
+	eventNameOfCloseWindow       = "event.close.window"
+	eventNameOfRedisHostsChanged = "event.redis.hosts.changed"
 )
 
 var currentApp App
@@ -101,10 +103,10 @@ func (g *guiApp) renderMain() {
 }
 
 func (g *guiApp) Start() error {
+	currentApp = g
 	if err := g.initialize(); err != nil {
 		return err
 	}
-	currentApp = g
 	fyne.CurrentApp().Run()
 	return nil
 }
@@ -133,4 +135,22 @@ func currentLanguage() string {
 
 func currentRecordWindowSize() bool {
 	return fyne.CurrentApp().Preferences().BoolWithFallback(preferenceKeyOfRecordWindowSize, true)
+}
+
+type redisEntry struct {
+	Name     string
+	Hosts    []string
+	Password []string
+}
+
+func loadRedisConfigList() []redisEntry {
+	s := fyne.CurrentApp().Preferences().String(preferenceKeyOfRedisConfigList)
+	if len(s) == 0 {
+		return nil
+	}
+	var res []redisEntry
+	if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(utils.NocopyStr2ByteSlice(s), &res); err != nil {
+		return nil
+	}
+	return res
 }

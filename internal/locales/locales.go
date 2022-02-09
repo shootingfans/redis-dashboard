@@ -36,6 +36,8 @@ const (
 	BUTTON_SAVE         Tag = "Save"
 	BUTTON_CANCEL       Tag = "Cancel"
 	BUTTON_EDIT_SETTING Tag = "Edit Setting"
+	BUTTON_CONNECT      Tag = "Connect"
+	BUTTON_DISCONNECT   Tag = "Disconnect"
 )
 
 func init() {

@@ -37,6 +37,8 @@ func (c simplifiedChinesePlugin) GetTagList() map[Tag]string {
 		BUTTON_SAVE:                     "保存",
 		BUTTON_CANCEL:                   "取消",
 		BUTTON_EDIT_SETTING:             "修改配置",
+		BUTTON_CONNECT:                  "连接",
+		BUTTON_DISCONNECT:               "断开",
 	}
 }
 

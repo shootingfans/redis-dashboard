@@ -37,6 +37,8 @@ func (t traditionalChinesePlugin) GetTagList() map[locales.Tag]string {
 		locales.BUTTON_SAVE:                     "保存",
 		locales.BUTTON_CANCEL:                   "取消",
 		locales.BUTTON_EDIT_SETTING:             "修改配置",
+		locales.BUTTON_CONNECT:                  "連結",
+		locales.BUTTON_DISCONNECT:               "斷開",
 	}
 }
 

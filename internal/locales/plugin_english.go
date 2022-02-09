@@ -37,5 +37,7 @@ func (e englishPlugin) GetTagList() map[Tag]string {
 		BUTTON_SAVE:                     string(BUTTON_SAVE),
 		BUTTON_CANCEL:                   string(BUTTON_CANCEL),
 		BUTTON_EDIT_SETTING:             string(BUTTON_EDIT_SETTING),
+		BUTTON_CONNECT:                  string(BUTTON_CONNECT),
+		BUTTON_DISCONNECT:               string(BUTTON_DISCONNECT),
 	}
 }

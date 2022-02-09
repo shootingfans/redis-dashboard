@@ -8,4 +8,7 @@ require (
 	golang.org/x/text v0.3.7
 )
 
-require golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
+require (
+	github.com/json-iterator/go v1.1.12 // indirect
+	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
+)

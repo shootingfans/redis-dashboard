@@ -17,7 +17,7 @@ a desktop dashboard for management redis
 - [ ] logger
 - [ ] auto update
 - [X] record windows size
-- [ ] left workspace toggle whether visible
+- [X] left workspace toggle whether visible
 - [ ] redis host manage in left workspace
 - [ ] redis keys manage in right workspace
 - [ ] redis command interaction

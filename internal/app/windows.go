@@ -41,6 +41,12 @@ func makeToolBar(parent fyne.Window) fyne.CanvasObject {
 		widget.NewToolbarAction(theme.MenuIcon(), func() {
 			currentApp.EventManager().Trigger(eventNameOfToggleLeftMenu, nil)
 		}),
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+			// todo add redis
+		}),
+		widget.NewToolbarAction(theme.DeleteIcon(), func() {
+			// todo delete current control redis
+		}),
 	)
 	return container.NewHBox(leftToolbar, layout.NewSpacer(), rightToolbar)
 }
@@ -93,7 +99,34 @@ func makeRecordWindowSize() *widget.FormItem {
 }
 
 func makeWorkspace() fyne.CanvasObject {
-	return container.NewCenter(widget.NewLabel("workspace"))
+	updateButtonLabel := func(selected string) {
+		// todo find redis connect states
+	}
+	hostSelector := widget.NewSelect(nil, updateButtonLabel)
+	currentApp.EventManager().FocusOn(eventNameOfRedisHostsChanged, func(_ string, _ interface{}) {
+		var hosts []string
+		for _, item := range loadRedisConfigList() {
+			hosts = append(hosts, item.Name)
+		}
+		hostSelector.Options = hosts
+		hostSelector.Refresh()
+	})
+	controlRedis := func() {}
+	controlButton := widget.NewButton(locales.Get(locales.BUTTON_CONNECT), controlRedis)
+	leftMenu := container.NewVBox(
+		container.NewHBox(hostSelector, controlButton),
+	)
+	currentApp.EventManager().FocusOn(eventNameOfToggleLeftMenu, func(_ string, _ interface{}) {
+		if leftMenu.Visible() {
+			leftMenu.Hide()
+			return
+		}
+		leftMenu.Show()
+	})
+	workspace := container.NewVBox(
+		widget.NewLabel("workspace"),
+	)
+	return container.NewGridWithColumns(2, leftMenu, workspace)
 }
 
 func makeButtonToolbar() fyne.CanvasObject {
