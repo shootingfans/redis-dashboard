@@ -42,7 +42,7 @@ func makeToolBar(parent fyne.Window) fyne.CanvasObject {
 			currentApp.EventManager().Trigger(eventNameOfToggleLeftMenu, nil)
 		}),
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			// todo add redis
+			makeCreateRedisDialog(parent).Show()
 		}),
 		widget.NewToolbarAction(theme.DeleteIcon(), func() {
 			// todo delete current control redis
@@ -134,4 +134,25 @@ func makeButtonToolbar() fyne.CanvasObject {
 		layout.NewSpacer(),
 		widget.NewLabel(appVersion),
 	)
+}
+
+func makeCreateRedisDialog(parent fyne.Window) dialog.Dialog {
+	var items []*widget.FormItem
+	items = append(items, widget.NewFormItem(locales.Get(locales.LABEL_NEW_REDIS_NAME), widget.NewEntry()))
+	endpointEntry := widget.NewEntry()
+	endpointEntry.SetPlaceHolder(locales.Get(locales.LABEL_NEW_REDIS_PLACEHOLDER))
+	items = append(items, widget.NewFormItem(locales.Get(locales.LABEL_NEW_REDIS_ENDPOINT), endpointEntry))
+	items = append(items, widget.NewFormItem(locales.Get(locales.LABEL_NEW_REDIS_PASSWORD), widget.NewPasswordEntry()))
+	submit := func(confirm bool) {
+		if !confirm {
+			return
+		}
+	}
+	dg := dialog.NewForm(
+		locales.Get(locales.TITLE_REDIS_CREATE_WINDOWS),
+		locales.Get(locales.BUTTON_CONFIRM),
+		locales.Get(locales.BUTTON_CANCEL),
+		items, submit, parent)
+	dg.Resize(fyne.NewSize(defaultNewRedisDialogWidth, defaultNewRedisDialogHeight))
+	return dg
 }

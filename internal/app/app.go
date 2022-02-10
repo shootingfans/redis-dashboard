@@ -31,6 +31,8 @@ const (
 	defaultMainAppWindowsHeight = 600
 	defaultSettingDialogWidth   = 300
 	defaultSettingDialogHeight  = 100
+	defaultNewRedisDialogWidth  = 400
+	defaultNewRedisDialogHeight = 200
 )
 
 const (

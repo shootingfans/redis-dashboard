@@ -24,13 +24,18 @@ const (
 
 	FLAG_PLUGIN_FOLDER_DESCRIPTION Tag = "Set the plugin folder"
 
-	LABEL_SELECT_LANGUAGE Tag = "Language"
-	LABEL_SELECT_THEME    Tag = "Theme"
-	LABEL_THEME_DARK      Tag = "Dark"
-	LABEL_THEME_LIGHT     Tag = "Light"
-	LABEL_RECORD_SIZE     Tag = "Record Window Size"
+	LABEL_SELECT_LANGUAGE       Tag = "Language"
+	LABEL_SELECT_THEME          Tag = "Theme"
+	LABEL_THEME_DARK            Tag = "Dark"
+	LABEL_THEME_LIGHT           Tag = "Light"
+	LABEL_RECORD_SIZE           Tag = "Record Window Size"
+	LABEL_NEW_REDIS_NAME        Tag = "Redis Name"
+	LABEL_NEW_REDIS_ENDPOINT    Tag = "Redis Endpoint"
+	LABEL_NEW_REDIS_PASSWORD    Tag = "Redis Password"
+	LABEL_NEW_REDIS_PLACEHOLDER Tag = "like host:port, multi separate by \",\""
 
-	TITLE_SETTING_WINDOWS Tag = "Setting"
+	TITLE_SETTING_WINDOWS      Tag = "Setting"
+	TITLE_REDIS_CREATE_WINDOWS Tag = "New Redis"
 
 	BUTTON_CONFIRM      Tag = "Confirm"
 	BUTTON_SAVE         Tag = "Save"
