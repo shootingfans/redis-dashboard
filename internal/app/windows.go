@@ -1,6 +1,10 @@
 package app
 
 import (
+	"errors"
+	"regexp"
+	"strings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -105,7 +109,8 @@ func makeWorkspace() fyne.CanvasObject {
 	hostSelector := widget.NewSelect(nil, updateButtonLabel)
 	currentApp.EventManager().FocusOn(eventNameOfRedisHostsChanged, func(_ string, _ interface{}) {
 		var hosts []string
-		for _, item := range loadRedisConfigList() {
+		list, _ := redisStore.List()
+		for _, item := range list {
 			hosts = append(hosts, item.Name)
 		}
 		hostSelector.Options = hosts
@@ -123,6 +128,7 @@ func makeWorkspace() fyne.CanvasObject {
 		}
 		leftMenu.Show()
 	})
+	currentApp.EventManager().Trigger(eventNameOfRedisHostsChanged, nil)
 	workspace := container.NewVBox(
 		widget.NewLabel("workspace"),
 	)
@@ -138,15 +144,37 @@ func makeButtonToolbar() fyne.CanvasObject {
 
 func makeCreateRedisDialog(parent fyne.Window) dialog.Dialog {
 	var items []*widget.FormItem
-	items = append(items, widget.NewFormItem(locales.Get(locales.LABEL_NEW_REDIS_NAME), widget.NewEntry()))
+	nameEntry := widget.NewEntry()
+	nameEntry.SetPlaceHolder(locales.Get(locales.LABEL_NEW_REDIS_NAME_PLACEHOLDER))
+	nameEntry.Validator = func(name string) error {
+		if redisStore.Exists(name) {
+			return errors.New(locales.Get(locales.ERROR_ALREADY_EXISTS))
+		}
+		return nil
+	}
+	items = append(items, widget.NewFormItem(locales.Get(locales.LABEL_NEW_REDIS_NAME), nameEntry))
 	endpointEntry := widget.NewEntry()
 	endpointEntry.SetPlaceHolder(locales.Get(locales.LABEL_NEW_REDIS_PLACEHOLDER))
+	endpointEntry.Validator = func(endpoints string) error {
+		return checkEndpoints(strings.Split(endpoints, ",")...)
+	}
 	items = append(items, widget.NewFormItem(locales.Get(locales.LABEL_NEW_REDIS_ENDPOINT), endpointEntry))
-	items = append(items, widget.NewFormItem(locales.Get(locales.LABEL_NEW_REDIS_PASSWORD), widget.NewPasswordEntry()))
+	passwordEntry := widget.NewPasswordEntry()
+	items = append(items, widget.NewFormItem(locales.Get(locales.LABEL_NEW_REDIS_PASSWORD), passwordEntry))
 	submit := func(confirm bool) {
 		if !confirm {
 			return
 		}
+		_, err := redisStore.Add(redisEntry{
+			Name:     nameEntry.Text,
+			Hosts:    strings.Split(endpointEntry.Text, ","),
+			Password: passwordEntry.Text,
+		})
+		if err != nil {
+			dialog.ShowError(err, parent)
+			return
+		}
+		currentApp.EventManager().Trigger(eventNameOfRedisHostsChanged, nil)
 	}
 	dg := dialog.NewForm(
 		locales.Get(locales.TITLE_REDIS_CREATE_WINDOWS),
@@ -155,4 +183,17 @@ func makeCreateRedisDialog(parent fyne.Window) dialog.Dialog {
 		items, submit, parent)
 	dg.Resize(fyne.NewSize(defaultNewRedisDialogWidth, defaultNewRedisDialogHeight))
 	return dg
+}
+
+func checkEndpoints(endpoints ...string) error {
+	if len(endpoints) == 0 {
+		return errors.New(locales.Get(locales.ERROR_ENDPOINTS_REQUIRED))
+	}
+	r := regexp.MustCompile(`^([0-9a-zA-Z-_.]+)(:[0-9]+)?$`)
+	for _, endpoint := range endpoints {
+		if !r.MatchString(endpoint) {
+			return errors.New(locales.Get(locales.ERROR_INCORRECT_ENDPOINT, endpoint))
+		}
+	}
+	return nil
 }

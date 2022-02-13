@@ -1,9 +1,11 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -44,6 +46,7 @@ const (
 )
 
 var currentApp App
+var redisStore *redisEntryStore
 
 // App define application interface
 type App interface {
@@ -106,6 +109,7 @@ func (g *guiApp) renderMain() {
 
 func (g *guiApp) Start() error {
 	currentApp = g
+	redisStore = new(redisEntryStore)
 	if err := g.initialize(); err != nil {
 		return err
 	}
@@ -142,17 +146,97 @@ func currentRecordWindowSize() bool {
 type redisEntry struct {
 	Name     string
 	Hosts    []string
-	Password []string
+	Password string
 }
 
-func loadRedisConfigList() []redisEntry {
+func (r redisEntry) Equal(e redisEntry) bool {
+	return r.Name == e.Name
+}
+
+type redisEntryStore struct {
+	locker sync.RWMutex
+}
+
+func (r *redisEntryStore) List() ([]redisEntry, error) {
+	r.locker.RLock()
+	defer r.locker.RUnlock()
+	return r.getList()
+}
+
+func (r *redisEntryStore) getList() ([]redisEntry, error) {
 	s := fyne.CurrentApp().Preferences().String(preferenceKeyOfRedisConfigList)
 	if len(s) == 0 {
-		return nil
+		return nil, nil
 	}
-	var res []redisEntry
-	if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(utils.NocopyStr2ByteSlice(s), &res); err != nil {
-		return nil
+	var list []redisEntry
+	if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(utils.NocopyStr2ByteSlice(s), &list); err != nil {
+		return nil, errors.New(locales.Get(locales.ERROR_UNMARSHAL_FAILED))
 	}
-	return res
+	return list, nil
+}
+
+func (r *redisEntryStore) saveList(list []redisEntry) error {
+	b, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(list)
+	if err != nil {
+		return errors.New(locales.Get(locales.ERROR_MARSHAL_FAILED))
+	}
+	fyne.CurrentApp().Preferences().SetString(preferenceKeyOfRedisConfigList, utils.NocopyByteSlice2Str(b))
+	return nil
+}
+
+func (r *redisEntryStore) Add(entry redisEntry) ([]redisEntry, error) {
+	r.locker.Lock()
+	defer r.locker.Unlock()
+	list, err := r.getList()
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range list {
+		if item.Equal(entry) {
+			return list, errors.New(locales.Get(locales.ERROR_ALREADY_EXISTS))
+		}
+	}
+	list = append(list, entry)
+	if err := r.saveList(list); err != nil {
+		return list, errors.New(locales.Get(locales.ERROR_START_APPLICATION_FAILED, err))
+	}
+	return list, nil
+}
+
+func (r *redisEntryStore) Del(entry redisEntry) ([]redisEntry, error) {
+	r.locker.Lock()
+	defer r.locker.Unlock()
+	list, err := r.getList()
+	if err != nil {
+		return nil, err
+	}
+	for i, item := range list {
+		if item.Equal(entry) {
+			switch i {
+			case 0:
+				list = list[1:]
+			case len(list) - 1:
+				list = list[0:i]
+			default:
+				list = append(list[0:i], list[i+1:]...)
+			}
+			break
+		}
+	}
+	if err := r.saveList(list); err != nil {
+		return list, errors.New(locales.Get(locales.ERROR_REMOVE_FAILED, err))
+	}
+	return list, nil
+}
+
+func (r *redisEntryStore) Exists(name string) bool {
+	if list, err := r.List(); err == nil {
+		for _, entry := range list {
+			if entry.Name == name {
+				return true
+			}
+		}
+		return false
+	}
+	return false
 }
