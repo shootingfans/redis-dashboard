@@ -20,8 +20,8 @@ jobs:
 
       - name: Install x11 dependencies
         run: |
-          sudo apt-update
-          sudo apt-upgrade
+          sudo apt update
+          sudo apt upgrade
           sudo apt-get install gcc libgl1-mesa-dev xorg-dev
 
       - name: Install go dependencies
