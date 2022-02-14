@@ -19,7 +19,10 @@ jobs:
           go-version: ${{ matrix.go_version }}
 
       - name: Install x11 dependencies
-        run: sudo apt update && apt-get install gcc libgl1-mesa-dev xorg-dev
+        run: |
+          sudo apt-update
+          sudo apt-upgrade
+          sudo apt-get install gcc libgl1-mesa-dev xorg-dev
 
       - name: Install go dependencies
         run: go mod tidy -v
